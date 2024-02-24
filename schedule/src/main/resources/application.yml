@@ -1,0 +1,29 @@
+eureka:
+  instance:
+    virtual-host-name: localhost
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8070
+spring:
+  application:
+    name: schedule
+  config:
+    import: optional:configserver:http://localhost:8888
+  datasource:
+    url: jdbc:h2:mem:schedule
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
