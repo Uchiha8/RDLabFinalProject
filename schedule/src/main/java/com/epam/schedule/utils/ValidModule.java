@@ -1,12 +1,11 @@
 package com.epam.schedule.utils;
 
-import com.epam.schedule.domain.Trainer;
 import com.epam.schedule.dto.TrainerClientDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ValidModule {
-    public boolean isValid(TrainerClientDTO request) {
+    public void isValid(TrainerClientDTO request) {
         if (request.firstName() == null) {
             throw new RuntimeException("First name is required");
         } else if (request.lastName() == null) {
@@ -19,8 +18,12 @@ public class ValidModule {
             throw new RuntimeException("Duration is required");
         } else if (request.dateTime() == null) {
             throw new RuntimeException("Date and time is required");
-        } else {
-            return true;
+        }
+    }
+
+    public void isValidUsername(String username) {
+        if (username == null) {
+            throw new RuntimeException("Username is required");
         }
     }
 }
