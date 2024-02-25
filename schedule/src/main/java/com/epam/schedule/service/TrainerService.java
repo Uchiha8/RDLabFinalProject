@@ -5,6 +5,8 @@ import com.epam.schedule.dto.Month;
 import com.epam.schedule.dto.Schedule;
 import com.epam.schedule.dto.TrainerClientDTO;
 import com.epam.schedule.dto.Years;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.epam.schedule.repository.TrainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.Objects;
 @Service
 public class TrainerService {
     private final TrainerRepository trainerRepository;
+    private static Logger logger = LogManager.getLogger(TrainerService.class);
 
     @Autowired
     public TrainerService(TrainerRepository trainerRepository) {
@@ -34,6 +37,7 @@ public class TrainerService {
                 .actionType(request.actionType())
                 .build();
         trainerRepository.save(trainer);
+        logger.info("Trainer with username " + request.username() + " saved");
     }
 
     public Schedule getSchedule(String username) {
@@ -41,6 +45,7 @@ public class TrainerService {
         try {
             trainer = trainerRepository.findAllByUsername(username);
         } catch (Exception e) {
+            logger.error("Trainer with username " + username + " not found");
             throw new RuntimeException("Trainer with username " + username + " not found");
         }
         List<Years> years = new ArrayList<>();
@@ -73,6 +78,7 @@ public class TrainerService {
                 }
             }
         }
+        logger.info("Schedule for trainer with username " + username + " returned");
         return Schedule.builder()
                 .username(trainer.get(0).getUsername())
                 .firstName(trainer.get(0).getFirstName())
@@ -105,6 +111,7 @@ public class TrainerService {
         for (TrainerClientDTO trainerClientDTO : request) {
             save(trainerClientDTO);
         }
+        logger.info("All trainers saved");
     }
 }
 
