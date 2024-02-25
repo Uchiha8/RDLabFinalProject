@@ -1,11 +1,9 @@
 package com.epam.schedule.dto;
 
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
-import java.time.*;
+import java.time.Duration;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +11,6 @@ import java.time.*;
 @Getter
 @Setter
 public class Month {
-    @Enumerated(EnumType.STRING)
-    private EnumMonth month;
+    private String month;
     private Duration summaryDuration;
 }

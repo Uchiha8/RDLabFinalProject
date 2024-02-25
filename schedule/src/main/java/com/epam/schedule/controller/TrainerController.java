@@ -54,9 +54,4 @@ public class TrainerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        return ResponseEntity.badRequest().body("Test failed");
-    }
 }
