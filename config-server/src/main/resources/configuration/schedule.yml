@@ -24,3 +24,5 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+  activemq:
+    broker-url: tcp://localhost:61616

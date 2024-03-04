@@ -21,6 +21,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: create-drop
+  activemq:
+    broker-url: tcp://localhost:61616
 management:
   endpoint:
     health:

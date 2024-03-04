@@ -5,10 +5,13 @@ import com.epam.schedule.dto.Month;
 import com.epam.schedule.dto.Schedule;
 import com.epam.schedule.dto.TrainerClientDTO;
 import com.epam.schedule.dto.Years;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.epam.schedule.repository.TrainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -112,6 +115,37 @@ public class TrainerService {
             save(trainerClientDTO);
         }
         logger.info("All trainers saved");
+    }
+
+    @JmsListener(destination = "finaldemo")
+    public void consumeTrainingSave(String message) {
+        logger.info("Training consumed: " + message);
+        Trainer trainer = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            trainer = objectMapper.readValue(message, Trainer.class);
+            trainerRepository.save(trainer);
+            logger.info("Trainer with username " + trainer.getUsername() + " saved");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    @JmsListener(destination = "finaldemo")
+    public void consumeTrainingDelete(String message) {
+        logger.info("Training consumed: " + message);
+        List<TrainerClientDTO> trainerClientDTO = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            trainerClientDTO = objectMapper.readValue(message, new com.fasterxml.jackson.core.type.TypeReference<List<TrainerClientDTO>>() {
+            });
+            saveAll(trainerClientDTO);
+            logger.info("All trainers saved");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }
 
