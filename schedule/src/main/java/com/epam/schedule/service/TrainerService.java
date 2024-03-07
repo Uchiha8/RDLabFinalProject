@@ -5,13 +5,18 @@ import com.epam.schedule.dto.Month;
 import com.epam.schedule.dto.Schedule;
 import com.epam.schedule.dto.TrainerClientDTO;
 import com.epam.schedule.dto.Years;
+import com.epam.schedule.repository.TrainerRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.jms.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.epam.schedule.repository.TrainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,11 +24,16 @@ import java.util.Objects;
 @Service
 public class TrainerService {
     private final TrainerRepository trainerRepository;
-    private static Logger logger = LogManager.getLogger(TrainerService.class);
+    private final Queue queue;
+    private final JmsTemplate jmsTemplate;
+
+    private static final Logger logger = LogManager.getLogger(TrainerService.class);
 
     @Autowired
-    public TrainerService(TrainerRepository trainerRepository) {
+    public TrainerService(TrainerRepository trainerRepository, Queue queue, JmsTemplate jmsTemplate) {
         this.trainerRepository = trainerRepository;
+        this.queue = queue;
+        this.jmsTemplate = jmsTemplate;
     }
 
     public void save(TrainerClientDTO request) {
@@ -112,6 +122,34 @@ public class TrainerService {
             save(trainerClientDTO);
         }
         logger.info("All trainers saved");
+    }
+
+    @JmsListener(destination = "finaldemo", id = "1")
+    public void consumeMessage(String message) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            TrainerClientDTO trainerClientDTO = mapper.readValue(message, TrainerClientDTO.class);
+            save(trainerClientDTO);
+            logger.info("Trainer saved");
+        } catch (Exception e) {
+            logger.error("Error while saving trainer");
+        }
+    }
+
+    @JmsListener(destination = "finaldemo", id = "2")
+    public void consumerUsername(String message) {
+        logger.info("Received message: " + message);
+        try {
+            Schedule schedule = getSchedule(message);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String json;
+            json = mapper.writeValueAsString(schedule);
+            jmsTemplate.convertAndSend(queue, json);
+        } catch (Exception e) {
+            logger.error("Error while converting schedule to json");
+        }
     }
 }
 
