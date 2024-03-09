@@ -1,10 +1,13 @@
 package com.epam.schedule.utils;
 
 import com.epam.schedule.dto.TrainerClientDTO;
+import com.epam.schedule.repository.TrainerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ValidModule {
+
     public void isValid(TrainerClientDTO request) {
         if (request.firstName() == null) {
             throw new RuntimeException("First name is required");

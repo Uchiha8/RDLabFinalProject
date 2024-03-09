@@ -2,6 +2,8 @@ package com.epam.schedule.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
