@@ -6,7 +6,6 @@ import com.epam.schedule.dto.Schedule;
 import com.epam.schedule.dto.TrainerClientDTO;
 import com.epam.schedule.dto.Years;
 import com.epam.schedule.repository.TrainerRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.jms.Queue;
@@ -114,7 +113,6 @@ public class TrainerService {
             case 12 -> "DECEMBER";
             default -> throw new RuntimeException("Invalid month number");
         };
-
     }
 
     public void saveAll(List<TrainerClientDTO> request) {
@@ -127,11 +125,15 @@ public class TrainerService {
     @JmsListener(destination = "finaldemo", id = "1")
     public void consumeMessage(String message) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            TrainerClientDTO trainerClientDTO = mapper.readValue(message, TrainerClientDTO.class);
-            save(trainerClientDTO);
-            logger.info("Trainer saved");
+            if (message.length() < 15) {
+                consumerUsername(message);
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                TrainerClientDTO trainerClientDTO = mapper.readValue(message, TrainerClientDTO.class);
+                save(trainerClientDTO);
+                logger.info("Trainer saved");
+            }
         } catch (Exception e) {
             logger.error("Error while saving trainer");
         }
@@ -141,12 +143,16 @@ public class TrainerService {
     public void consumerUsername(String message) {
         logger.info("Received message: " + message);
         try {
-            Schedule schedule = getSchedule(message);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            String json;
-            json = mapper.writeValueAsString(schedule);
-            jmsTemplate.convertAndSend(queue, json);
+            if (message.length() > 15) {
+                consumeMessage(message);
+            } else {
+                Schedule schedule = getSchedule(message);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                String json;
+                json = mapper.writeValueAsString(schedule);
+                jmsTemplate.convertAndSend(queue, json);
+            }
         } catch (Exception e) {
             logger.error("Error while converting schedule to json");
         }
