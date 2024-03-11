@@ -9,9 +9,12 @@ import com.epam.schedule.repository.TrainerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.jms.Queue;
+import jdk.jfr.Label;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -23,13 +26,14 @@ import java.util.Objects;
 @Service
 public class TrainerService {
     private final TrainerRepository trainerRepository;
-    private final ScheduleService scheduleService;
+    private final ApplicationContext applicationContext;
+
     private static final Logger logger = LogManager.getLogger(TrainerService.class);
 
     @Autowired
-    public TrainerService(TrainerRepository trainerRepository, ScheduleService scheduleService) {
+    public TrainerService(TrainerRepository trainerRepository, ApplicationContext applicationContext) {
         this.trainerRepository = trainerRepository;
-        this.scheduleService = scheduleService;
+        this.applicationContext = applicationContext;
     }
 
     public void save(TrainerClientDTO request) {
@@ -43,6 +47,7 @@ public class TrainerService {
                 .actionType(request.actionType())
                 .build();
         trainerRepository.save(trainer);
+        ScheduleService scheduleService = applicationContext.getBean(ScheduleService.class);
         scheduleService.save(request.username());
         logger.info("Trainer with username " + request.username() + " saved");
     }
@@ -51,6 +56,7 @@ public class TrainerService {
     public void consumeMessage(String message) {
         try {
             if (message.length() < 15) {
+                ScheduleService scheduleService = applicationContext.getBean(ScheduleService.class);
                 scheduleService.consumerUsername(message);
             } else {
                 ObjectMapper mapper = new ObjectMapper();

@@ -12,6 +12,7 @@ import jakarta.jms.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -25,17 +26,17 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final TrainerRepository trainerRepository;
-    private final TrainerService trainerService;
+    private final ApplicationContext applicationContext;
     private final Queue queue;
     private final JmsTemplate jmsTemplate;
     private static final Logger logger = LogManager.getLogger(TrainerService.class);
 
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository, TrainerRepository trainerRepository, TrainerService trainerService, Queue queue, JmsTemplate jmsTemplate) {
+    public ScheduleService(ScheduleRepository scheduleRepository, TrainerRepository trainerRepository, ApplicationContext applicationContext, Queue queue, JmsTemplate jmsTemplate) {
         this.scheduleRepository = scheduleRepository;
         this.trainerRepository = trainerRepository;
-        this.trainerService = trainerService;
+        this.applicationContext = applicationContext;
         this.queue = queue;
         this.jmsTemplate = jmsTemplate;
     }
@@ -45,6 +46,11 @@ public class ScheduleService {
         List<Years> years = generateYearsList(trainers);
         populateMonthsData(trainers, years);
         logger.info("Schedule for trainer with username " + username + " returned");
+        if (scheduleRepository.findByUsername(username) != null) {
+            for (Trainer trainer : trainers) {
+                scheduleRepository.deleteByUsername(trainer.getUsername());
+            }
+        }
         scheduleRepository.insert(buildSchedule(trainers.get(0), years));
     }
 
@@ -83,7 +89,7 @@ public class ScheduleService {
     }
 
     private void populateMonthData(Trainer trainer, Years year) {
-        int month = trainer.getDateTime().getMonth();
+        int month = trainer.getDateTime().getMonth() + 1;
         String monthName = monthReporter(month);
 
         Month monthObject = year.getMonths().stream()
@@ -126,6 +132,22 @@ public class ScheduleService {
         };
     }
 
+    public Schedule findByFirstName(String firstName) {
+        Schedule schedule = scheduleRepository.findByFirstName(firstName);
+        if (schedule == null) {
+            throw new RuntimeException("Schedule for trainer with first name " + firstName + " not found");
+        }
+        return schedule;
+    }
+
+    public Schedule findByLastName(String lastName) {
+        Schedule schedule = scheduleRepository.findByLastName(lastName);
+        if (schedule == null) {
+            throw new RuntimeException("Schedule for trainer with first name " + lastName + " not found");
+        }
+        return schedule;
+    }
+
 
     public void updateSchedule(String username, Schedule schedule) {
         Schedule existingSchedule = getSchedule(username);
@@ -144,6 +166,7 @@ public class ScheduleService {
         logger.info("Received message: " + message);
         try {
             if (message.length() > 15) {
+                TrainerService trainerService = applicationContext.getBean(TrainerService.class);
                 trainerService.consumeMessage(message);
             } else {
                 Schedule schedule = getSchedule(message);

@@ -10,4 +10,6 @@ public interface ScheduleRepository extends MongoRepository<Schedule, String> {
     //create index for search with firstName or lastName
     Schedule findByFirstName(String firstName);
     Schedule findByLastName(String lastName);
+
+    void deleteByUsername(String username);
 }

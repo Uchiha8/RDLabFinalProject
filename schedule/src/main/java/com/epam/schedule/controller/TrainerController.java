@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import java.util.List;
 public class TrainerController {
     private final TrainerService trainerService;
     private final ValidModule validModule;
-    private final ScheduleService scheduleService;
     private static final Logger logger = LogManager.getLogger(TrainerController.class);
 
     @PostMapping("/save")
@@ -32,20 +32,6 @@ public class TrainerController {
             trainerService.save(request);
             logger.info("Trainer with username " + request.username() + " saved");
             return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            logger.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/schedule")
-    public ResponseEntity<?> getSchedule(@RequestParam String username) {
-        try {
-            validModule.isValidUsername(username);
-            logger.info("Schedule for trainer with username " + username + " returned");
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            return ResponseEntity.ok(scheduleService.getSchedule(username));
         } catch (RuntimeException e) {
             logger.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());

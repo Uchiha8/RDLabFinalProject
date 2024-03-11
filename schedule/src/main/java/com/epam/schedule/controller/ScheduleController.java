@@ -19,8 +19,8 @@ public class ScheduleController {
         this.validModule = validModule;
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getSchedule(@PathVariable(name = "username") String username) {
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getScheduleByUsername(@PathVariable(name = "username") String username) {
         try {
             validModule.isValidUsername(username);
             Schedule schedule = scheduleService.getSchedule(username);
@@ -29,6 +29,27 @@ public class ScheduleController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/firstName/{firstName}")
+    public ResponseEntity<?> getScheduleByFirstname(@PathVariable(name = "firstName") String firstName) {
+        try {
+            validModule.isValidUsername(firstName);
+            Schedule schedule = scheduleService.findByFirstName(firstName);
+            return ResponseEntity.ok(schedule);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/lastName/{lastName}")
+    public ResponseEntity<?> getScheduleByLastname(@PathVariable(name = "lastName") String lastName) {
+        try {
+            validModule.isValidUsername(lastName);
+            Schedule schedule = scheduleService.findByLastName(lastName);
+            return ResponseEntity.ok(schedule);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
     @PutMapping("/{username}")
     public ResponseEntity<?> save(@PathVariable(name = "username") String username, @RequestBody Schedule schedule) {
