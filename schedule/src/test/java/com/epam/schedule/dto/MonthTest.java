@@ -24,6 +24,23 @@ public class MonthTest {
     }
 
     @Test
+    public void testBuilder() {
+        // Given
+        String expectedMonth = "January";
+        Duration expectedSummaryDuration = Duration.ofDays(30);
+
+        // When
+        Month month = Month.builder()
+                .month(expectedMonth)
+                .summaryDuration(expectedSummaryDuration)
+                .build();
+
+        // Then
+        assertNotNull(month);
+        assertEquals(expectedMonth, month.getMonth());
+        assertEquals(expectedSummaryDuration, month.getSummaryDuration());
+    }
+    @Test
     void testNoArgsConstructor() {
         // Act
         Month monthObject = new Month();

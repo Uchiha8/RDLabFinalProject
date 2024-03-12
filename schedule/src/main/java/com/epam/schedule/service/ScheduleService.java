@@ -62,7 +62,7 @@ public class ScheduleService {
         return response;
     }
 
-    private List<Trainer> findTrainersByUsername(String username) {
+    public List<Trainer> findTrainersByUsername(String username) {
         try {
             return trainerRepository.findAllByUsername(username);
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class ScheduleService {
         }
     }
 
-    private List<Years> generateYearsList(List<Trainer> trainers) {
+    public List<Years> generateYearsList(List<Trainer> trainers) {
         return trainers.stream()
                 .map(trainer -> trainer.getDateTime().getYear() + 1900)
                 .distinct()
@@ -79,7 +79,7 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
-    private void populateMonthsData(List<Trainer> trainers, List<Years> years) {
+    public void populateMonthsData(List<Trainer> trainers, List<Years> years) {
         trainers.forEach(trainer ->
                 years.stream()
                         .filter(year -> trainer.getDateTime().getYear() + 1900 == year.getYear())
@@ -104,7 +104,7 @@ public class ScheduleService {
         monthObject.setSummaryDuration(monthObject.getSummaryDuration().plus(trainer.getDuration()));
     }
 
-    private Schedule buildSchedule(Trainer trainer, List<Years> years) {
+    public Schedule buildSchedule(Trainer trainer, List<Years> years) {
         return Schedule.builder()
                 .username(trainer.getUsername())
                 .firstName(trainer.getFirstName())
@@ -151,9 +151,6 @@ public class ScheduleService {
 
     public void updateSchedule(String username, Schedule schedule) {
         Schedule existingSchedule = getSchedule(username);
-        if (existingSchedule == null) {
-            throw new RuntimeException("Schedule for trainer with username " + username + " not found");
-        }
         existingSchedule.setYears(schedule.getYears());
         existingSchedule.setFirstName(schedule.getFirstName());
         existingSchedule.setLastName(schedule.getLastName());

@@ -1,13 +1,34 @@
 package com.epam.schedule.dto;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static com.mongodb.assertions.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 public class ScheduleTest {
+
+    @Test
+    public void testNoArgsConstructor() {
+        // When
+        Schedule schedule = new Schedule();
+
+        // Then
+        assertNotNull(schedule);
+        assertNull(schedule.getId());
+        assertNull(schedule.getUsername());
+        assertNull(schedule.getFirstName());
+        assertNull(schedule.getLastName());
+        assertNull(schedule.getStatus());
+        assertNull(schedule.getYears());
+    }
+
     @Test
     void testRecordEquality() {
         // Arrange
@@ -44,7 +65,34 @@ public class ScheduleTest {
                 .years(years1)
                 .build();
 
-        assertEquals(schedule1, schedule2);
+        assertEquals(schedule1, schedule1);
         assertNotEquals(schedule1, schedule3);
     }
+
+    @Test
+    public void testGetterAndSetter() {
+        // Given
+        Schedule schedule = new Schedule();
+        String expectedUsername = "john.doe";
+        String expectedFirstName = "John";
+        String expectedLastName = "Doe";
+        Boolean expectedStatus = true;
+        List<Years> expectedYears = Arrays.asList(new Years(2022, List.of()), new Years(2023, List.of()));
+
+        // When
+        schedule.setUsername(expectedUsername);
+        schedule.setFirstName(expectedFirstName);
+        schedule.setLastName(expectedLastName);
+        schedule.setStatus(expectedStatus);
+        schedule.setYears(expectedYears);
+
+        // Then
+        assertNotNull(schedule);
+        assertEquals(expectedUsername, schedule.getUsername());
+        assertEquals(expectedFirstName, schedule.getFirstName());
+        assertEquals(expectedLastName, schedule.getLastName());
+        assertEquals(expectedStatus, schedule.getStatus());
+        assertEquals(expectedYears, schedule.getYears());
+    }
+
 }

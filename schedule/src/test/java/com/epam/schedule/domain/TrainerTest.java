@@ -32,7 +32,7 @@ public class TrainerTest {
         ActionType actionType = ActionType.CREATE;
 
         // Act
-        Trainer trainer = new Trainer(id, username, firstName, lastName, isActive, dateTime, duration, actionType);
+        Trainer trainer = new Trainer(1L, username, firstName, lastName, true, new Date(), Duration.ofHours(1), ActionType.CREATE);
 
         // Assert
         assertNotNull(trainer);

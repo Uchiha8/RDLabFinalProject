@@ -1,27 +1,16 @@
 package com.epam.schedule.service;
 
 import com.epam.schedule.domain.Trainer;
-import com.epam.schedule.dto.Month;
-import com.epam.schedule.dto.Schedule;
 import com.epam.schedule.dto.TrainerClientDTO;
-import com.epam.schedule.dto.Years;
 import com.epam.schedule.repository.TrainerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.jms.Queue;
-import jdk.jfr.Label;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class TrainerService {

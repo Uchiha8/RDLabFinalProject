@@ -18,14 +18,14 @@ spring:
         enabled: false
   activemq:
     broker-url: tcp://localhost:61616
-#  data:
-#    mongodb:
-#      username: ali
-#      password: password
-#      database: schedule
-#      host: localhost
-#      port: 27017
-#      authentication-database: admin
+  data:
+    mongodb:
+      username: ali
+      password: password
+      database: schedule
+      host: localhost
+      port: 27017
+      authentication-database: admin
   datasource:
     url: jdbc:h2:mem:schedule
     username: sa
