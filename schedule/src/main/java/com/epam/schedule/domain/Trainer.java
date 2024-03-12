@@ -2,6 +2,8 @@ package com.epam.schedule.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Duration;
@@ -14,6 +16,7 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
+@CompoundIndex()
 public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
