@@ -29,6 +29,7 @@ public class ScheduleController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/firstName/{firstName}")
     public ResponseEntity<?> getScheduleByFirstname(@PathVariable(name = "firstName") String firstName) {
         try {
@@ -39,6 +40,7 @@ public class ScheduleController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/lastName/{lastName}")
     public ResponseEntity<?> getScheduleByLastname(@PathVariable(name = "lastName") String lastName) {
         try {
