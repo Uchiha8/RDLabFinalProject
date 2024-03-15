@@ -1,4 +1,4 @@
-peureka:
+eureka:
   instance:
     virtual-host-name: localhost
     hostname: localhost
