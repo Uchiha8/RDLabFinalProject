@@ -4,7 +4,6 @@ import com.epam.schedule.domain.ActionType;
 import com.epam.schedule.dto.TrainerClientDTO;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.Assertions.*;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,9 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.Date;
-import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TrainerControllerIT {
     @LocalServerPort
